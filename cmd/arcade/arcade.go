@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	apiKey := os.Getenv("API_KEY")
+	apiKey := os.Getenv("ARCADE_API_KEY")
 	if apiKey == "" {
 		log.Fatal("API_KEY not set; exiting.")
 	}
