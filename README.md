@@ -9,7 +9,7 @@ go build cmd/arcade/arcade.go
 ### Run
 
 ```bash
-export API_KEY=test
+export ARCADE_API_KEY=test
 ./arcade
 ```
 
