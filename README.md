@@ -1,5 +1,7 @@
 # arcade
 
+Arcade is meant to be used in tandem with Google's [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) to generate your tokens in a sidecar and make them retrievable through a simple  authenticated API.
+
 ### Build
 
 ```bash
