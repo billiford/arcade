@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	r = gin.New()
+	r = gin.Default()
 )
 
 func init() {
@@ -21,7 +21,6 @@ func init() {
 
 	gin.ForceConsoleColor()
 
-	r.Use(gin.Recovery())
 	r.Use(middleware.NewApiKeyAuth(apiKey))
 
 	r.GET("/tokens", http.GetToken)
