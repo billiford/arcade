@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	mux      sync.Mutex
-	t        time.Time
-	token    string
-	err      error
-	duration = time.Duration(1 * time.Minute)
+	mux        sync.Mutex
+	t          time.Time
+	token      string
+	err        error
+	expiration = 1 * time.Minute
 )
 
-func NewToken(c *gin.Context) {
+func GetToken(c *gin.Context) {
 	mux.Lock()
 	defer mux.Unlock()
 
-	if time.Since(t) > duration || token == "" {
+	if time.Since(t) > expiration || token == "" {
 		token, err = google.NewToken()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

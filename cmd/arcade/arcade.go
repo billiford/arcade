@@ -24,7 +24,7 @@ func init() {
 	r.Use(gin.Recovery())
 	r.Use(middleware.NewApiKeyAuth(apiKey))
 
-	r.GET("/tokens", http.NewToken)
+	r.GET("/tokens", http.GetToken)
 }
 
 // Run arcade on port 1982.
