@@ -30,11 +30,11 @@ jobs:
             dep ensure
         fi
 
-    - name: Build
-      run: go build -v cmd/clouddriver/clouddriver.go
-
-    - name: Test
-      run: go test -v ./...
+    # - name: Build
+    #   run: go build -v cmd/clouddriver/clouddriver.go
+    #
+    # - name: Test
+    #   run: go test -v ./...
 
     - name: Cover
       run: go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
