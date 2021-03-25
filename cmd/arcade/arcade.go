@@ -29,5 +29,8 @@ func init() {
 
 // Run arcade on port 1982.
 func main() {
-	r.Run(":1982")
+	err := r.Run(":1982")
+	if err != nil {
+		panic(err)
+	}
 }
