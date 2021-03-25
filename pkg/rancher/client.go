@@ -112,5 +112,6 @@ func Instance(c *gin.Context) Client {
 	if exists {
 		return instance.(Client)
 	}
+
 	return nil
 }

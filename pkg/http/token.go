@@ -22,7 +22,6 @@ var (
 )
 
 func GetToken(c *gin.Context) {
-
 	provider := c.Query("provider")
 
 	switch provider {
@@ -37,13 +36,13 @@ func GetToken(c *gin.Context) {
 }
 
 func GetGoogleToken(c *gin.Context) {
-
 	googleMux.Lock()
 	defer googleMux.Unlock()
 
 	if time.Since(t) > expiration || token == "" {
 		googleClient := google.Instance(c)
 		token, err = googleClient.NewToken()
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -56,7 +55,6 @@ func GetGoogleToken(c *gin.Context) {
 }
 
 func GetRancherToken(c *gin.Context) {
-
 	if time.Now().In(time.UTC).After(kubeconfigToken.ExpiresAt) || kubeconfigToken.Token == "" {
 		rancherMux.Lock()
 		defer rancherMux.Unlock()
@@ -66,6 +64,7 @@ func GetRancherToken(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "token provider not configured: rancher"})
 			return
 		}
+
 		kubeconfigToken, err = rancherClient.NewToken(c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

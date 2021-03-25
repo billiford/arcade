@@ -74,7 +74,7 @@ var _ = Describe("Token", func() {
 			It("succeeds", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusBadRequest))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Error).To(Equal("Unsupported token provider: fake"))
 			})
 		})
@@ -115,7 +115,7 @@ var _ = Describe("Token", func() {
 			It("returns an internal server error", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusInternalServerError))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Error).To(Equal("error getting token from google"))
 			})
 		})
@@ -128,7 +128,7 @@ var _ = Describe("Token", func() {
 			It("defaults to google", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusOK))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Token).To(Equal("fake-google-token"))
 			})
 		})
@@ -137,7 +137,7 @@ var _ = Describe("Token", func() {
 			It("succeeds", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusOK))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Token).To(Equal("fake-google-token"))
 			})
 		})
@@ -184,7 +184,7 @@ var _ = Describe("Token", func() {
 			It("returns a bad request error", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusBadRequest))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Error).To(Equal("token provider not configured: rancher"))
 			})
 		})
@@ -197,7 +197,7 @@ var _ = Describe("Token", func() {
 			It("returns an internal server error", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusInternalServerError))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Error).To(Equal("error getting token from rancher"))
 			})
 		})
@@ -219,7 +219,7 @@ var _ = Describe("Token", func() {
 			It("it succeeds", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusOK))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Token).To(Equal("valid-rancher-token"))
 			})
 		})
@@ -228,7 +228,7 @@ var _ = Describe("Token", func() {
 			It("succeeds", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusOK))
 				b, _ := ioutil.ReadAll(res.Body)
-				json.Unmarshal(b, &tokens)
+				_ = json.Unmarshal(b, &tokens)
 				Expect(tokens.Token).To(Equal("valid-rancher-token"))
 			})
 		})
