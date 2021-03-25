@@ -12,6 +12,7 @@ func NewApiKeyAuth(apiKey string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "bad api key"})
 			return
 		}
+
 		c.Next()
 	}
 }
