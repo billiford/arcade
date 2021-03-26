@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/homedepot/arcade/pkg/google"
+	"github.com/homedepot/arcade/pkg/rancher"
 )
 
 func NewApiKeyAuth(apiKey string) gin.HandlerFunc {
@@ -13,6 +15,20 @@ func NewApiKeyAuth(apiKey string) gin.HandlerFunc {
 			return
 		}
 
+		c.Next()
+	}
+}
+
+func SetGoogleClient(g google.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(google.Key, g)
+		c.Next()
+	}
+}
+
+func SetRancherClient(r rancher.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(rancher.Key, r)
 		c.Next()
 	}
 }
