@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.homedepot.com/cd/arcade/pkg/google"
-	"github.homedepot.com/cd/arcade/pkg/rancher"
+	"github.com/homedepot/arcade/pkg/google"
+	"github.com/homedepot/arcade/pkg/rancher"
 )
 
 var (
@@ -26,23 +26,23 @@ func GetToken(c *gin.Context) {
 
 	switch provider {
 	case "rancher":
-		GetRancherToken(c)
+		getRancherToken(c)
 	case "google", "":
-		GetGoogleToken(c)
+		getGoogleToken(c)
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Unsupported token provider: %s", provider)})
 		return
 	}
 }
 
-func GetGoogleToken(c *gin.Context) {
+func getGoogleToken(c *gin.Context) {
 	googleMux.Lock()
 	defer googleMux.Unlock()
 
 	if time.Since(t) > expiration || token == "" {
 		googleClient := google.Instance(c)
-		token, err = googleClient.NewToken()
 
+		token, err = googleClient.NewToken()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -54,7 +54,7 @@ func GetGoogleToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-func GetRancherToken(c *gin.Context) {
+func getRancherToken(c *gin.Context) {
 	if time.Now().In(time.UTC).After(kubeconfigToken.ExpiresAt) || kubeconfigToken.Token == "" {
 		rancherMux.Lock()
 		defer rancherMux.Unlock()
