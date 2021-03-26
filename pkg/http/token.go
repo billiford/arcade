@@ -57,10 +57,10 @@ func getGoogleToken(c *gin.Context) {
 }
 
 func getRancherToken(c *gin.Context) {
-	rancherMux.Lock()
-	defer rancherMux.Unlock()
-
 	if time.Now().In(time.UTC).After(kubeconfigToken.ExpiresAt) || kubeconfigToken.Token == "" {
+		rancherMux.Lock()
+		defer rancherMux.Unlock()
+
 		rancherClient := rancher.Instance(c)
 		if rancherClient == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "token provider not configured: rancher"})
