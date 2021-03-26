@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.homedepot.com/cd/arcade/pkg/google"
-	"github.homedepot.com/cd/arcade/pkg/rancher"
+	"github.com/homedepot/arcade/pkg/google"
+	"github.com/homedepot/arcade/pkg/rancher"
 )
 
 func NewApiKeyAuth(apiKey string) gin.HandlerFunc {

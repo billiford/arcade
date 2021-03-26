@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	. "github.homedepot.com/cd/arcade/pkg/rancher"
+	. "github.com/homedepot/arcade/pkg/rancher"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

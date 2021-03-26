@@ -4,7 +4,7 @@ package googlefakes
 import (
 	"sync"
 
-	"github.homedepot.com/cd/arcade/pkg/google"
+	"github.com/homedepot/arcade/pkg/google"
 )
 
 type FakeClient struct {

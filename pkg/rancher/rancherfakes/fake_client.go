@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.homedepot.com/cd/arcade/pkg/rancher"
+	"github.com/homedepot/arcade/pkg/rancher"
 )
 
 type FakeClient struct {

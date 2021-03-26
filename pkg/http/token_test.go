@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/homedepot/arcade/pkg/google/googlefakes"
+	arcadehttp "github.com/homedepot/arcade/pkg/http"
+	"github.com/homedepot/arcade/pkg/middleware"
+	"github.com/homedepot/arcade/pkg/rancher"
+	"github.com/homedepot/arcade/pkg/rancher/rancherfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.homedepot.com/cd/arcade/pkg/google/googlefakes"
-	arcade_http "github.homedepot.com/cd/arcade/pkg/http"
-	"github.homedepot.com/cd/arcade/pkg/middleware"
-	"github.homedepot.com/cd/arcade/pkg/rancher"
-	"github.homedepot.com/cd/arcade/pkg/rancher/rancherfakes"
 )
 
 type Tokens struct {
@@ -54,7 +54,7 @@ var _ = Describe("Token", func() {
 			BeforeEach(func() {
 				r := gin.New()
 				r.Use(gin.Recovery())
-				r.GET("/tokens", arcade_http.GetToken)
+				r.GET("/tokens", arcadehttp.GetToken)
 
 				svr = httptest.NewServer(r)
 				uri = svr.URL + "/tokens?provider=fake"
@@ -90,7 +90,7 @@ var _ = Describe("Token", func() {
 			r := gin.New()
 			r.Use(gin.Recovery())
 			r.Use(middleware.SetGoogleClient(fakeGoogleClient))
-			r.GET("/tokens", arcade_http.GetToken)
+			r.GET("/tokens", arcadehttp.GetToken)
 
 			svr = httptest.NewServer(r)
 			uri = svr.URL + "/tokens?provider=google"
@@ -153,7 +153,7 @@ var _ = Describe("Token", func() {
 			r := gin.New()
 			r.Use(gin.Recovery())
 			r.Use(middleware.SetRancherClient(fakeRancherClient))
-			r.GET("/tokens", arcade_http.GetToken)
+			r.GET("/tokens", arcadehttp.GetToken)
 
 			svr = httptest.NewServer(r)
 			uri = svr.URL + "/tokens?provider=rancher"
@@ -174,7 +174,7 @@ var _ = Describe("Token", func() {
 			BeforeEach(func() {
 				r := gin.New()
 				r.Use(gin.Recovery())
-				r.GET("/tokens", arcade_http.GetToken)
+				r.GET("/tokens", arcadehttp.GetToken)
 
 				svr = httptest.NewServer(r)
 				uri = svr.URL + "/tokens?provider=rancher"

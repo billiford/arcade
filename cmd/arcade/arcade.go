@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.homedepot.com/cd/arcade/pkg/google"
-	"github.homedepot.com/cd/arcade/pkg/http"
-	"github.homedepot.com/cd/arcade/pkg/middleware"
-	"github.homedepot.com/cd/arcade/pkg/rancher"
+	"github.com/homedepot/arcade/pkg/google"
+	"github.com/homedepot/arcade/pkg/http"
+	"github.com/homedepot/arcade/pkg/middleware"
+	"github.com/homedepot/arcade/pkg/rancher"
 )
 
 var (
