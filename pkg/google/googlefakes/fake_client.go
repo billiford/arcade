@@ -5,30 +5,29 @@ import (
 	"sync"
 
 	"github.com/homedepot/arcade/pkg/google"
+	"golang.org/x/oauth2"
 )
 
 type FakeClient struct {
-	NewTokenStub        func() (string, error)
+	NewTokenStub        func() (*oauth2.Token, error)
 	newTokenMutex       sync.RWMutex
-	newTokenArgsForCall []struct {
-	}
-	newTokenReturns struct {
-		result1 string
+	newTokenArgsForCall []struct{}
+	newTokenReturns     struct {
+		result1 *oauth2.Token
 		result2 error
 	}
 	newTokenReturnsOnCall map[int]struct {
-		result1 string
+		result1 *oauth2.Token
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeClient) NewToken() (string, error) {
+func (fake *FakeClient) NewToken() (*oauth2.Token, error) {
 	fake.newTokenMutex.Lock()
 	ret, specificReturn := fake.newTokenReturnsOnCall[len(fake.newTokenArgsForCall)]
-	fake.newTokenArgsForCall = append(fake.newTokenArgsForCall, struct {
-	}{})
+	fake.newTokenArgsForCall = append(fake.newTokenArgsForCall, struct{}{})
 	fake.recordInvocation("NewToken", []interface{}{})
 	fake.newTokenMutex.Unlock()
 	if fake.NewTokenStub != nil {
@@ -37,8 +36,7 @@ func (fake *FakeClient) NewToken() (string, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.newTokenReturns
-	return fakeReturns.result1, fakeReturns.result2
+	return fake.newTokenReturns.result1, fake.newTokenReturns.result2
 }
 
 func (fake *FakeClient) NewTokenCallCount() int {
@@ -47,34 +45,24 @@ func (fake *FakeClient) NewTokenCallCount() int {
 	return len(fake.newTokenArgsForCall)
 }
 
-func (fake *FakeClient) NewTokenCalls(stub func() (string, error)) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
-	fake.NewTokenStub = stub
-}
-
-func (fake *FakeClient) NewTokenReturns(result1 string, result2 error) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
+func (fake *FakeClient) NewTokenReturns(result1 *oauth2.Token, result2 error) {
 	fake.NewTokenStub = nil
 	fake.newTokenReturns = struct {
-		result1 string
+		result1 *oauth2.Token
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeClient) NewTokenReturnsOnCall(i int, result1 string, result2 error) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
+func (fake *FakeClient) NewTokenReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
 	fake.NewTokenStub = nil
 	if fake.newTokenReturnsOnCall == nil {
 		fake.newTokenReturnsOnCall = make(map[int]struct {
-			result1 string
+			result1 *oauth2.Token
 			result2 error
 		})
 	}
 	fake.newTokenReturnsOnCall[i] = struct {
-		result1 string
+		result1 *oauth2.Token
 		result2 error
 	}{result1, result2}
 }

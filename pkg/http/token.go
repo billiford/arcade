@@ -9,18 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/homedepot/arcade/pkg/google"
 	"github.com/homedepot/arcade/pkg/rancher"
+	"golang.org/x/oauth2"
 )
 
 var (
-	err             error
-	googleMux       sync.Mutex
-	t               time.Time
-	token           string
-	expiration      = 1 * time.Minute
-	rancherMux      sync.Mutex
-	kubeconfigToken rancher.KubeconfigToken
+	err              error
+	googleMux        sync.Mutex
+	googleExpiration time.Time
+	googleToken      *oauth2.Token
+	rancherMux       sync.Mutex
+	kubeconfigToken  rancher.KubeconfigToken
 )
 
+// GetToken returns a new access token for a given provider.
 func GetToken(c *gin.Context) {
 	provider := c.Query("provider")
 
@@ -39,19 +40,21 @@ func getGoogleToken(c *gin.Context) {
 	googleMux.Lock()
 	defer googleMux.Unlock()
 
-	if time.Since(t) > expiration || token == "" {
+	if time.Now().UTC().After(googleExpiration) || googleToken == nil {
 		googleClient := google.Instance(c)
 
-		token, err = googleClient.NewToken()
+		googleToken, err = googleClient.NewToken()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		t = time.Now().In(time.UTC)
+		// Set the expiration for the Google token to be 90% expiry-threshold.
+		// Expiry looks something like '2021-03-26 15:53:24.513497 -0400 EDT m=+3599.302993422'
+		googleExpiration = time.Now().UTC().Add((time.Until(googleToken.Expiry) / 10) * 9)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{"token": googleToken.AccessToken})
 }
 
 func getRancherToken(c *gin.Context) {

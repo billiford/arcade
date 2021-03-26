@@ -17,6 +17,7 @@ import (
 	"github.com/homedepot/arcade/pkg/rancher/rancherfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"golang.org/x/oauth2"
 )
 
 type Tokens struct {
@@ -33,9 +34,11 @@ var (
 	res               *http.Response
 	tokens            Tokens
 	fakeGoogleClient  *googlefakes.FakeClient
-	fakeGoogleToken   = "fake-google-token"
 	fakeRancherClient *rancherfakes.FakeClient
-	fakeRancherToken  = rancher.KubeconfigToken{
+	fakeGoogleToken   = &oauth2.Token{
+		AccessToken: "fake-google-token",
+	}
+	fakeRancherToken = rancher.KubeconfigToken{
 		Token: "fake-rancher-token",
 	}
 	expiredRancherToken = rancher.KubeconfigToken{
@@ -49,6 +52,11 @@ var (
 )
 
 var _ = Describe("Token", func() {
+	BeforeEach(func() {
+		// Disable debug logging.
+		gin.SetMode(gin.ReleaseMode)
+	})
+
 	Describe("#GetToken", func() {
 		When("provider is not supported", func() {
 			BeforeEach(func() {
@@ -109,7 +117,7 @@ var _ = Describe("Token", func() {
 
 		When("getting a new token from google fails", func() {
 			BeforeEach(func() {
-				fakeGoogleClient.NewTokenReturns("", errors.New("error getting token from google"))
+				fakeGoogleClient.NewTokenReturns(nil, errors.New("error getting token from google"))
 			})
 
 			It("returns an internal server error", func() {

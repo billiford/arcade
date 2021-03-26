@@ -23,16 +23,6 @@ type FakeClient struct {
 		result1 rancher.KubeconfigToken
 		result2 error
 	}
-	WithPasswordStub        func(string)
-	withPasswordMutex       sync.RWMutex
-	withPasswordArgsForCall []struct {
-		arg1 string
-	}
-	WithTransportStub        func(*http.Transport)
-	withTransportMutex       sync.RWMutex
-	withTransportArgsForCall []struct {
-		arg1 *http.Transport
-	}
 	WithURLStub        func(string)
 	withURLMutex       sync.RWMutex
 	withURLArgsForCall []struct {
@@ -42,6 +32,16 @@ type FakeClient struct {
 	withUsernameMutex       sync.RWMutex
 	withUsernameArgsForCall []struct {
 		arg1 string
+	}
+	WithPasswordStub        func(string)
+	withPasswordMutex       sync.RWMutex
+	withPasswordArgsForCall []struct {
+		arg1 string
+	}
+	WithTransportStub        func(*http.Transport)
+	withTransportMutex       sync.RWMutex
+	withTransportArgsForCall []struct {
+		arg1 *http.Transport
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -61,8 +61,7 @@ func (fake *FakeClient) NewToken(arg1 context.Context) (rancher.KubeconfigToken,
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.newTokenReturns
-	return fakeReturns.result1, fakeReturns.result2
+	return fake.newTokenReturns.result1, fake.newTokenReturns.result2
 }
 
 func (fake *FakeClient) NewTokenCallCount() int {
@@ -71,22 +70,13 @@ func (fake *FakeClient) NewTokenCallCount() int {
 	return len(fake.newTokenArgsForCall)
 }
 
-func (fake *FakeClient) NewTokenCalls(stub func(context.Context) (rancher.KubeconfigToken, error)) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
-	fake.NewTokenStub = stub
-}
-
 func (fake *FakeClient) NewTokenArgsForCall(i int) context.Context {
 	fake.newTokenMutex.RLock()
 	defer fake.newTokenMutex.RUnlock()
-	argsForCall := fake.newTokenArgsForCall[i]
-	return argsForCall.arg1
+	return fake.newTokenArgsForCall[i].arg1
 }
 
 func (fake *FakeClient) NewTokenReturns(result1 rancher.KubeconfigToken, result2 error) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
 	fake.NewTokenStub = nil
 	fake.newTokenReturns = struct {
 		result1 rancher.KubeconfigToken
@@ -95,8 +85,6 @@ func (fake *FakeClient) NewTokenReturns(result1 rancher.KubeconfigToken, result2
 }
 
 func (fake *FakeClient) NewTokenReturnsOnCall(i int, result1 rancher.KubeconfigToken, result2 error) {
-	fake.newTokenMutex.Lock()
-	defer fake.newTokenMutex.Unlock()
 	fake.NewTokenStub = nil
 	if fake.newTokenReturnsOnCall == nil {
 		fake.newTokenReturnsOnCall = make(map[int]struct {
@@ -108,68 +96,6 @@ func (fake *FakeClient) NewTokenReturnsOnCall(i int, result1 rancher.KubeconfigT
 		result1 rancher.KubeconfigToken
 		result2 error
 	}{result1, result2}
-}
-
-func (fake *FakeClient) WithPassword(arg1 string) {
-	fake.withPasswordMutex.Lock()
-	fake.withPasswordArgsForCall = append(fake.withPasswordArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("WithPassword", []interface{}{arg1})
-	fake.withPasswordMutex.Unlock()
-	if fake.WithPasswordStub != nil {
-		fake.WithPasswordStub(arg1)
-	}
-}
-
-func (fake *FakeClient) WithPasswordCallCount() int {
-	fake.withPasswordMutex.RLock()
-	defer fake.withPasswordMutex.RUnlock()
-	return len(fake.withPasswordArgsForCall)
-}
-
-func (fake *FakeClient) WithPasswordCalls(stub func(string)) {
-	fake.withPasswordMutex.Lock()
-	defer fake.withPasswordMutex.Unlock()
-	fake.WithPasswordStub = stub
-}
-
-func (fake *FakeClient) WithPasswordArgsForCall(i int) string {
-	fake.withPasswordMutex.RLock()
-	defer fake.withPasswordMutex.RUnlock()
-	argsForCall := fake.withPasswordArgsForCall[i]
-	return argsForCall.arg1
-}
-
-func (fake *FakeClient) WithTransport(arg1 *http.Transport) {
-	fake.withTransportMutex.Lock()
-	fake.withTransportArgsForCall = append(fake.withTransportArgsForCall, struct {
-		arg1 *http.Transport
-	}{arg1})
-	fake.recordInvocation("WithTransport", []interface{}{arg1})
-	fake.withTransportMutex.Unlock()
-	if fake.WithTransportStub != nil {
-		fake.WithTransportStub(arg1)
-	}
-}
-
-func (fake *FakeClient) WithTransportCallCount() int {
-	fake.withTransportMutex.RLock()
-	defer fake.withTransportMutex.RUnlock()
-	return len(fake.withTransportArgsForCall)
-}
-
-func (fake *FakeClient) WithTransportCalls(stub func(*http.Transport)) {
-	fake.withTransportMutex.Lock()
-	defer fake.withTransportMutex.Unlock()
-	fake.WithTransportStub = stub
-}
-
-func (fake *FakeClient) WithTransportArgsForCall(i int) *http.Transport {
-	fake.withTransportMutex.RLock()
-	defer fake.withTransportMutex.RUnlock()
-	argsForCall := fake.withTransportArgsForCall[i]
-	return argsForCall.arg1
 }
 
 func (fake *FakeClient) WithURL(arg1 string) {
@@ -190,17 +116,10 @@ func (fake *FakeClient) WithURLCallCount() int {
 	return len(fake.withURLArgsForCall)
 }
 
-func (fake *FakeClient) WithURLCalls(stub func(string)) {
-	fake.withURLMutex.Lock()
-	defer fake.withURLMutex.Unlock()
-	fake.WithURLStub = stub
-}
-
 func (fake *FakeClient) WithURLArgsForCall(i int) string {
 	fake.withURLMutex.RLock()
 	defer fake.withURLMutex.RUnlock()
-	argsForCall := fake.withURLArgsForCall[i]
-	return argsForCall.arg1
+	return fake.withURLArgsForCall[i].arg1
 }
 
 func (fake *FakeClient) WithUsername(arg1 string) {
@@ -221,17 +140,58 @@ func (fake *FakeClient) WithUsernameCallCount() int {
 	return len(fake.withUsernameArgsForCall)
 }
 
-func (fake *FakeClient) WithUsernameCalls(stub func(string)) {
-	fake.withUsernameMutex.Lock()
-	defer fake.withUsernameMutex.Unlock()
-	fake.WithUsernameStub = stub
-}
-
 func (fake *FakeClient) WithUsernameArgsForCall(i int) string {
 	fake.withUsernameMutex.RLock()
 	defer fake.withUsernameMutex.RUnlock()
-	argsForCall := fake.withUsernameArgsForCall[i]
-	return argsForCall.arg1
+	return fake.withUsernameArgsForCall[i].arg1
+}
+
+func (fake *FakeClient) WithPassword(arg1 string) {
+	fake.withPasswordMutex.Lock()
+	fake.withPasswordArgsForCall = append(fake.withPasswordArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("WithPassword", []interface{}{arg1})
+	fake.withPasswordMutex.Unlock()
+	if fake.WithPasswordStub != nil {
+		fake.WithPasswordStub(arg1)
+	}
+}
+
+func (fake *FakeClient) WithPasswordCallCount() int {
+	fake.withPasswordMutex.RLock()
+	defer fake.withPasswordMutex.RUnlock()
+	return len(fake.withPasswordArgsForCall)
+}
+
+func (fake *FakeClient) WithPasswordArgsForCall(i int) string {
+	fake.withPasswordMutex.RLock()
+	defer fake.withPasswordMutex.RUnlock()
+	return fake.withPasswordArgsForCall[i].arg1
+}
+
+func (fake *FakeClient) WithTransport(arg1 *http.Transport) {
+	fake.withTransportMutex.Lock()
+	fake.withTransportArgsForCall = append(fake.withTransportArgsForCall, struct {
+		arg1 *http.Transport
+	}{arg1})
+	fake.recordInvocation("WithTransport", []interface{}{arg1})
+	fake.withTransportMutex.Unlock()
+	if fake.WithTransportStub != nil {
+		fake.WithTransportStub(arg1)
+	}
+}
+
+func (fake *FakeClient) WithTransportCallCount() int {
+	fake.withTransportMutex.RLock()
+	defer fake.withTransportMutex.RUnlock()
+	return len(fake.withTransportArgsForCall)
+}
+
+func (fake *FakeClient) WithTransportArgsForCall(i int) *http.Transport {
+	fake.withTransportMutex.RLock()
+	defer fake.withTransportMutex.RUnlock()
+	return fake.withTransportArgsForCall[i].arg1
 }
 
 func (fake *FakeClient) Invocations() map[string][][]interface{} {
@@ -239,14 +199,14 @@ func (fake *FakeClient) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.newTokenMutex.RLock()
 	defer fake.newTokenMutex.RUnlock()
-	fake.withPasswordMutex.RLock()
-	defer fake.withPasswordMutex.RUnlock()
-	fake.withTransportMutex.RLock()
-	defer fake.withTransportMutex.RUnlock()
 	fake.withURLMutex.RLock()
 	defer fake.withURLMutex.RUnlock()
 	fake.withUsernameMutex.RLock()
 	defer fake.withUsernameMutex.RUnlock()
+	fake.withPasswordMutex.RLock()
+	defer fake.withPasswordMutex.RUnlock()
+	fake.withTransportMutex.RLock()
+	defer fake.withTransportMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

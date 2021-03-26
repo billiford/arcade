@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
@@ -18,7 +19,7 @@ var clientScopes = []string{
 //go:generate counterfeiter . Client
 
 type Client interface {
-	NewToken() (string, error)
+	NewToken() (*oauth2.Token, error)
 }
 
 func NewClient() Client {
@@ -27,18 +28,18 @@ func NewClient() Client {
 
 type client struct{}
 
-func (client) NewToken() (string, error) {
+func (client) NewToken() (*oauth2.Token, error) {
 	tokenSource, err := google.DefaultTokenSource(context.Background(), clientScopes...)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	token, err := tokenSource.Token()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token.AccessToken, nil
+	return token, nil
 }
 
 func Instance(c *gin.Context) Client {
