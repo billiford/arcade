@@ -50,6 +50,7 @@ func getGoogleToken(c *gin.Context) {
 		}
 
 		// Set the expiration for the Google token to be 90% expiry-threshold.
+		// Expiry looks something like '2021-03-26 15:53:24.513497 -0400 EDT m=+3599.302993422'
 		googleExpiration = time.Now().UTC().Add((time.Until(googleToken.Expiry) / 10) * 9)
 	}
 
