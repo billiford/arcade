@@ -22,7 +22,7 @@ const payloadKubeconfigToken = `{
   },
   "lastUpdateTime": "",
   "links": {
-    "self": "https://rancher-np-ssc.homedepot.com/v3-public/tokens/kubeconfig-u-i76rfanbw5"
+    "self": "https://rancher.example.com/v3/tokens/kubeconfig-u-i76rfanbw5"
   },
   "name": "kubeconfig-u-i76rfanbw5",
   "token": "kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9",

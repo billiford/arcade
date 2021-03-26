@@ -43,7 +43,7 @@ go build cmd/arcade/arcade.go
 ```bash
 export ARCADE_API_KEY=test
 export RANCHER_ENABLED=TRUE
-export RANCHER_URL=https://rancher-np-ssc.homedepot.com/v3-public/activeDirectoryProviders/activedirectory?action=login
+export RANCHER_URL=https://rancher.example.com/v3/activeDirectoryProviders/activedirectory?action=login
 export RANCHER_USERNAME=myUsername
 export RANCHER_PASSWORD=myPassword
 ./arcade
@@ -54,7 +54,7 @@ export RANCHER_PASSWORD=myPassword
 **Google**
 
 ```bash
-curl localhost:1982/tokens/provider=google -H "Api-Key: test"
+curl localhost:1982/tokens?provider=google -H "Api-Key: test"
 ```
 
 The default token provider is google, so this is equivalent to the call above
@@ -65,6 +65,6 @@ curl localhost:1982/tokens -H "Api-Key: test"
 **Rancher**
 
 ```bash
-curl localhost:1982/tokens/provider=rancher -H "Api-Key: test"
+curl localhost:1982/tokens?provider=rancher -H "Api-Key: test"
 ```
 
