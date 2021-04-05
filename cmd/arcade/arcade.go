@@ -58,6 +58,7 @@ func mustInstantiateRancherClient() rancher.Client {
 		if rootCAs == nil {
 			rootCAs = x509.NewCertPool()
 		}
+
 		rootCAs.AppendCertsFromPEM([]byte(caCerts))
 
 		t := &http.Transport{
