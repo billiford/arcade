@@ -46,9 +46,11 @@ var _ = Describe("Token", func() {
 		gin.SetMode(gin.ReleaseMode)
 		// Setup the controller.
 		controller = &arcadehttp.Controller{
-			GoogleClient:    fakeGoogleClient,
-			MicrosoftClient: fakeMicrosoftClient,
-			RancherClient:   fakeRancherClient,
+			Tokenizers: map[string]arcadehttp.Tokenizer{
+				"google":    fakeGoogleClient,
+				"microsoft": fakeMicrosoftClient,
+				"rancher":   fakeRancherClient,
+			},
 		}
 		// Setup the server.
 		r := gin.New()
@@ -132,14 +134,14 @@ var _ = Describe("Token", func() {
 
 		When("microsoft is not a configured provider", func() {
 			BeforeEach(func() {
-				controller.MicrosoftClient = nil
+				delete(controller.Tokenizers, "microsoft")
 			})
 
 			It("returns a bad request error", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusBadRequest))
 				b, _ := ioutil.ReadAll(res.Body)
 				_ = json.Unmarshal(b, &tokens)
-				Expect(tokens.Error).To(Equal("token provider not configured: microsoft"))
+				Expect(tokens.Error).To(Equal("Unsupported token provider: microsoft"))
 			})
 		})
 
@@ -173,14 +175,14 @@ var _ = Describe("Token", func() {
 
 		When("rancher is not a configured provider", func() {
 			BeforeEach(func() {
-				controller.RancherClient = nil
+				delete(controller.Tokenizers, "rancher")
 			})
 
 			It("returns a bad request error", func() {
 				Expect(res.StatusCode).To(Equal(http.StatusBadRequest))
 				b, _ := ioutil.ReadAll(res.Body)
 				_ = json.Unmarshal(b, &tokens)
-				Expect(tokens.Error).To(Equal("token provider not configured: rancher"))
+				Expect(tokens.Error).To(Equal("Unsupported token provider: rancher"))
 			})
 		})
 
