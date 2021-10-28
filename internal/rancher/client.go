@@ -29,28 +29,13 @@ func NewClient() *Client {
 }
 
 type Client struct {
+	c           *http.Client
+	cachedToken KubeconfigToken
+	mux         sync.Mutex
+	password    string
+	timeout     time.Duration
 	url         string
 	username    string
-	password    string
-	c           *http.Client
-	mux         sync.Mutex
-	cachedToken KubeconfigToken
-}
-
-func (c *Client) WithURL(url string) {
-	c.url = url
-}
-
-func (c *Client) WithUsername(username string) {
-	c.username = username
-}
-
-func (c *Client) WithPassword(password string) {
-	c.password = password
-}
-
-func (c *Client) WithTransport(transport *http.Transport) {
-	c.c.Transport = transport
 }
 
 func (c *Client) Token(ctx context.Context) (string, error) {
@@ -70,13 +55,15 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 		if err != nil {
 			return "", err
 		}
-
-		req, err := http.NewRequest(http.MethodPost, c.url, bytes.NewBuffer(b))
+		// Configure request to time out.
+		ctx, cancel := context.WithTimeout(ctx, c.timeout)
+		defer cancel()
+		// Create the request.
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewBuffer(b))
 		if err != nil {
 			return "", err
 		}
 
-		req = req.WithContext(ctx)
 		req.Header.Add("Accept", "application/json")
 		req.Header.Add("Content-Type", "application/json")
 
@@ -101,4 +88,29 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 	}
 
 	return c.cachedToken.Token, nil
+}
+
+// WithPassword sets the password.
+func (c *Client) WithPassword(password string) {
+	c.password = password
+}
+
+// WithTransport sets the http transport.
+func (c *Client) WithTransport(transport *http.Transport) {
+	c.c.Transport = transport
+}
+
+// WithTimeout sets the timeout on the http request to retrieve the token.
+func (c *Client) WithTimeout(timeout time.Duration) {
+	c.timeout = timeout
+}
+
+// WithURL sets the URL.
+func (c *Client) WithURL(url string) {
+	c.url = url
+}
+
+// WithUsername sets the username.
+func (c *Client) WithUsername(username string) {
+	c.username = username
 }

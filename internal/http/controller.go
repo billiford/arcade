@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/homedepot/arcade/internal/google"
 	"github.com/homedepot/arcade/internal/microsoft"
@@ -17,6 +18,7 @@ import (
 )
 
 const (
+	DefaultTimeoutSeconds = 30
 	ProviderTypeRancher   = "rancher"
 	ProviderTypeMicrosoft = "microsoft"
 	ProviderTypeGoogle    = "google"
@@ -139,6 +141,7 @@ func NewController(dir string) (Controller, error) {
 				client.WithClientSecret(p.ClientSecret)
 				client.WithResource(p.Resource)
 				client.WithLoginEndpoint(p.LoginEndpoint)
+				client.WithTimeout(time.Second * DefaultTimeoutSeconds)
 				controller.Tokenizers[p.Name] = client
 			case ProviderTypeRancher:
 				if p.Username == "" {
@@ -175,6 +178,7 @@ func NewController(dir string) (Controller, error) {
 				client.WithURL(p.URL)
 				client.WithUsername(p.Username)
 				client.WithPassword(p.Password)
+				client.WithTimeout(time.Second * DefaultTimeoutSeconds)
 				controller.Tokenizers[p.Name] = client
 			default:
 				return controller, fmt.Errorf("unsupported token provider type: %s", p.Type)
