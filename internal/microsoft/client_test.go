@@ -3,6 +3,7 @@ package microsoft_test
 import (
 	"context"
 	"net/http"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,6 +29,7 @@ var _ = Describe("Client", func() {
 		client.WithClientID("fake-client-id")
 		client.WithClientSecret("fake-client-secret")
 		client.WithResource("fake-resource")
+		client.WithTimeout(time.Second)
 	})
 
 	AfterEach(func() {
@@ -103,6 +105,17 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(Equal("microsoft: error getting token: Error - requested resource not allowed"))
+			})
+		})
+
+		When("the response times out", func() {
+			BeforeEach(func() {
+				client.WithTimeout(0)
+			})
+
+			It("returns an error", func() {
+				Expect(err).ToNot(BeNil())
+				Expect(err.Error()).To(HaveSuffix("context deadline exceeded"))
 			})
 		})
 
@@ -185,6 +198,7 @@ var _ = Describe("Client", func() {
 			anotherclient.WithClientID("another-fake-client-id")
 			anotherclient.WithClientSecret("antoher-fake-client-secret")
 			anotherclient.WithResource("anotherfake-resource")
+			anotherclient.WithTimeout(time.Second)
 
 			// Call to server for first client.
 			res = `{

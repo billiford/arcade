@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net/http"
+	"time"
 
 	. "github.com/homedepot/arcade/internal/rancher"
 
@@ -30,6 +31,7 @@ var _ = Describe("Client", func() {
 		client.WithURL(server.URL())
 		client.WithUsername(username)
 		client.WithPassword(password)
+		client.WithTimeout(time.Second)
 	})
 
 	Describe("#NewToken", func() {
@@ -84,6 +86,17 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(Equal("invalid character ';' looking for beginning of object key string"))
+			})
+		})
+
+		When("the response times out", func() {
+			BeforeEach(func() {
+				client.WithTimeout(0)
+			})
+
+			It("returns an error", func() {
+				Expect(err).ToNot(BeNil())
+				Expect(err.Error()).To(HaveSuffix("context deadline exceeded"))
 			})
 		})
 
@@ -198,6 +211,7 @@ var _ = Describe("Client", func() {
 				anotherclient.WithURL(server.URL())
 				anotherclient.WithUsername("another-test-user")
 				anotherclient.WithPassword("another-test-pass")
+				anotherclient.WithTimeout(time.Second)
 				json = `{"responseType": "kubeconfig","username": "another-test-user","password": "another-test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),

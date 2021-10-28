@@ -18,13 +18,14 @@ import (
 // Client makes a request for a client token.
 type Client struct {
 	c             *http.Client
+	cachedToken   string
 	clientID      string
 	clientSecret  string
-	resource      string
+	expiration    time.Time
 	loginEndpoint string
 	mux           sync.Mutex
-	expiration    time.Time
-	cachedToken   string
+	resource      string
+	timeout       time.Duration
 }
 
 // NewClient returns an implementation of Client using a default http client.
@@ -70,6 +71,9 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 	data.Set("client_id", c.clientID)
 	data.Set("client_secret", c.clientSecret)
 	data.Set("resource", c.resource)
+	// Configure request to time out.
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
 	// Create request and URL encode the form.
 	r, err := http.NewRequestWithContext(ctx,
 		http.MethodPost,
@@ -137,13 +141,18 @@ func (c *Client) WithClientSecret(clientSecret string) {
 	c.clientSecret = clientSecret
 }
 
+// WithLoginEndpoint sets the login endpoint, for example
+// 'https://login.microsoftonline.com/someone.onmicrosoft.com/oauth2/token'.
+func (c *Client) WithLoginEndpoint(loginEndpoint string) {
+	c.loginEndpoint = loginEndpoint
+}
+
 // WithResource sets the resource, for example https://graph.microsoft.com.
 func (c *Client) WithResource(resource string) {
 	c.resource = resource
 }
 
-// WithTokenEndpoint sets the token endpoint, for example
-// 'https://login.microsoftonline.com/someone.onmicrosoft.com/oauth2/token'.
-func (c *Client) WithLoginEndpoint(loginEndpoint string) {
-	c.loginEndpoint = loginEndpoint
+// WithTimeout sets the timeout on the http request to retrieve the token.
+func (c *Client) WithTimeout(timeout time.Duration) {
+	c.timeout = timeout
 }
