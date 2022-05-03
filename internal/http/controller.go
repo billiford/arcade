@@ -40,10 +40,11 @@ type Provider struct {
 	Type string `json:"type"`
 	Name string `json:"name"`
 	// Rancher config.
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	RootCA   string `json:"rootCA,omitempty"`
-	URL      string `json:"url,omitempty"`
+	Username        string `json:"username,omitempty"`
+	Password        string `json:"password,omitempty"`
+	RootCA          string `json:"rootCA,omitempty"`
+	URL             string `json:"url,omitempty"`
+	ShortExpiration int    `json:"shortExpiration,omitempty"`
 	// Microsoft config.
 	ClientID      string `json:"clientId,omitempty"`
 	ClientSecret  string `json:"clientSecret,omitempty"`
@@ -179,6 +180,8 @@ func NewController(dir string) (Controller, error) {
 				client.WithUsername(p.Username)
 				client.WithPassword(p.Password)
 				client.WithTimeout(time.Second * DefaultTimeoutSeconds)
+				client.WithShortExpiration(p.ShortExpiration)
+
 				controller.Tokenizers[p.Name] = client
 			default:
 				return controller, fmt.Errorf("unsupported token provider type: %s", p.Type)

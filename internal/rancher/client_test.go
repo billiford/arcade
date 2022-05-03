@@ -50,6 +50,7 @@ var _ = Describe("Client", func() {
 
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
+				Expect(server.ReceivedRequests()).To(HaveLen(0))
 			})
 		})
 
@@ -60,6 +61,7 @@ var _ = Describe("Client", func() {
 
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
+				Expect(server.ReceivedRequests()).To(HaveLen(0))
 			})
 		})
 
@@ -73,6 +75,7 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(Equal("error getting token: 404 Not Found"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -86,6 +89,7 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(Equal("invalid character ';' looking for beginning of object key string"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -97,6 +101,7 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				Expect(err).ToNot(BeNil())
 				Expect(err.Error()).To(HaveSuffix("context deadline exceeded"))
+				Expect(server.ReceivedRequests()).To(HaveLen(0))
 			})
 		})
 
@@ -115,6 +120,7 @@ var _ = Describe("Client", func() {
 			It("succeeds", func() {
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -133,6 +139,7 @@ var _ = Describe("Client", func() {
 			It("succeeds", func() {
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -154,6 +161,7 @@ var _ = Describe("Client", func() {
 			It("succeeds", func() {
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -174,6 +182,7 @@ var _ = Describe("Client", func() {
 				// Second call returns cached token
 				t2, _ := client.Token(context.Background())
 				Expect(t2).To(Equal("fake.token.cached"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -191,6 +200,7 @@ var _ = Describe("Client", func() {
 			It("succeeds", func() {
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 
@@ -222,7 +232,7 @@ var _ = Describe("Client", func() {
 			})
 
 			It("succeeds", func() {
-				// Validae first client.
+				// Validate first client.
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
 
@@ -230,6 +240,86 @@ var _ = Describe("Client", func() {
 				t, err = anotherclient.Token(context.Background())
 				Expect(err).To(BeNil())
 				Expect(t).To(Equal("another.token"))
+				Expect(server.ReceivedRequests()).To(HaveLen(2))
+			})
+		})
+
+		When("there is a cached token, shortExpiration set and it has passed", func() {
+			BeforeEach(func() {
+				client.WithShortExpiration(1)
+				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				// create the "cache" in the client
+				server.AppendHandlers(ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/"),
+					ghttp.VerifyJSON(json),
+					ghttp.VerifyHeaderKV("accept", "application/json"),
+					ghttp.RespondWith(http.StatusCreated, payloadKubeconfigToken),
+				))
+				// call to test the short expiration
+				server.AppendHandlers(ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/"),
+					ghttp.VerifyJSON(json),
+					ghttp.VerifyHeaderKV("accept", "application/json"),
+					ghttp.RespondWith(http.StatusCreated, payloadKubeconfigTokenAnother),
+				))
+			})
+			It("fetches a new token", func() {
+				// make the initial call to create the cached token
+				Expect(err).To(BeNil())
+				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				time.Sleep(2 * time.Second)
+
+				// Second call returns the newly fetched token
+				t2, err2 := client.Token(context.Background())
+				Expect(err2).To(BeNil())
+				Expect(t2).To(Equal("another.token"))
+				Expect(server.ReceivedRequests()).To(HaveLen(2))
+			})
+		})
+
+		When("there is a shortExpiration set and it has not passed and there is a cached token", func() {
+			BeforeEach(func() {
+				client.WithShortExpiration(9223372040)
+				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				server.AppendHandlers(ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/"),
+					ghttp.VerifyJSON(json),
+					ghttp.VerifyHeaderKV("accept", "application/json"),
+					ghttp.RespondWith(http.StatusCreated, payloadKubeconfigTokenCached),
+				))
+			})
+
+			It("returns the cached token", func() {
+				// First call with cached response
+				Expect(err).To(BeNil())
+				Expect(t).To(Equal("fake.token.cached"))
+
+				time.Sleep(3 * time.Second)
+
+				// Second call returns the same response
+				t2, err2 := client.Token(context.Background())
+				Expect(err2).To(BeNil())
+				Expect(t2).To(Equal("fake.token.cached"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
+			})
+		})
+
+		When("there is a shortExpiration set and it has not passed and there is no cached token", func() {
+			BeforeEach(func() {
+				client.WithShortExpiration(1)
+				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				server.AppendHandlers(ghttp.CombineHandlers(
+					ghttp.VerifyRequest("POST", "/"),
+					ghttp.VerifyJSON(json),
+					ghttp.VerifyHeaderKV("accept", "application/json"),
+					ghttp.RespondWith(http.StatusCreated, payloadKubeconfigToken),
+				))
+			})
+
+			It("fetches a new token", func() {
+				Expect(err).To(BeNil())
+				Expect(t).To(Equal("kubeconfig-u-i76rfanbw5:ltqlpxqz5hh52sxfxfbxxkk6xw7pzkh7d922cww6m9x6fjskskxwl9"))
+				Expect(server.ReceivedRequests()).To(HaveLen(1))
 			})
 		})
 	})
