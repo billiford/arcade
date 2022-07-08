@@ -108,7 +108,7 @@ var _ = Describe("Client", func() {
 		When("the username is set", func() {
 			BeforeEach(func() {
 				client.WithUsername("new-user")
-				json := `{"responseType": "kubeconfig","username": "new-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "new-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -127,7 +127,7 @@ var _ = Describe("Client", func() {
 		When("the password is set", func() {
 			BeforeEach(func() {
 				client.WithPassword("new-pass")
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "new-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "new-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -149,7 +149,7 @@ var _ = Describe("Client", func() {
 					TLSClientConfig: &tls.Config{},
 				}
 				client.WithTransport(t)
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -167,7 +167,7 @@ var _ = Describe("Client", func() {
 
 		When("the token is cached", func() {
 			BeforeEach(func() {
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -188,7 +188,7 @@ var _ = Describe("Client", func() {
 
 		When("it succeeds", func() {
 			BeforeEach(func() {
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -209,7 +209,7 @@ var _ = Describe("Client", func() {
 
 			BeforeEach(func() {
 				// Call to server for first client.
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -222,7 +222,7 @@ var _ = Describe("Client", func() {
 				anotherclient.WithUsername("another-test-user")
 				anotherclient.WithPassword("another-test-pass")
 				anotherclient.WithTimeout(time.Second)
-				json = `{"responseType": "kubeconfig","username": "another-test-user","password": "another-test-pass"}`
+				json = `{"responseType": "json","username": "another-test-user","password": "another-test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -247,7 +247,7 @@ var _ = Describe("Client", func() {
 		When("there is a cached token, shortExpiration set and it has passed", func() {
 			BeforeEach(func() {
 				client.WithShortExpiration(1)
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				// create the "cache" in the client
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
@@ -280,7 +280,7 @@ var _ = Describe("Client", func() {
 		When("there is a shortExpiration set and it has not passed and there is a cached token", func() {
 			BeforeEach(func() {
 				client.WithShortExpiration(9223372040)
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
@@ -307,7 +307,7 @@ var _ = Describe("Client", func() {
 		When("there is a shortExpiration set and it has not passed and there is no cached token", func() {
 			BeforeEach(func() {
 				client.WithShortExpiration(1)
-				json := `{"responseType": "kubeconfig","username": "test-user","password": "test-pass"}`
+				json := `{"responseType": "json","username": "test-user","password": "test-pass"}`
 				server.AppendHandlers(ghttp.CombineHandlers(
 					ghttp.VerifyRequest("POST", "/"),
 					ghttp.VerifyJSON(json),
