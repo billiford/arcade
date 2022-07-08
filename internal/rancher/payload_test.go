@@ -1,23 +1,23 @@
 package rancher_test
 
 const payloadKubeconfigToken = `{
-  "authProvider": "local",
+  "authProvider": "activedirectory",
   "baseType": "token",
   "clusterId": null,
   "created": "2021-03-25T10:38:18Z",
   "createdTS": 1616668698000,
   "creatorId": null,
   "current": false,
-  "description": "Kubeconfig token",
+  "description": "",
   "enabled": true,
   "expired": false,
-  "expiresAt": "2021-03-25T20:38:18Z",
+  "expiresAt": "",
   "groupPrincipals": null,
-  "id": "kubeconfig-u-i76rfanbw5",
-  "isDerived": true,
+  "id": "token-855qm",
+  "isDerived": false,
   "labels": {
-    "authn.management.cattle.io/kind": "kubeconfig",
-    "authn.management.cattle.io/token-userId": "u-i76rfanbw5",
+    "authn.management.cattle.io/kind": "session",
+    "authn.management.cattle.io/token-userId": "u-xspkfzqum5",
     "cattle.io/creator": "norman"
   },
   "lastUpdateTime": "",
