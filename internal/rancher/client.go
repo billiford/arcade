@@ -30,7 +30,19 @@ func NewClient() *Client {
 
 func (c *Client) tokenExpired() bool {
 	tokenExpired := c.shortExpiration > 0 && int(time.Since(c.cachedToken.Created.In(time.UTC)).Seconds()) > c.shortExpiration
-	return time.Now().In(time.UTC).After(c.cachedToken.ExpiresAt) || c.cachedToken.Token == "" || tokenExpired
+
+	expiredAtString := c.cachedToken.ExpiresAt
+	if expiredAtString == "" {
+
+		return time.Now().In(time.UTC).After(time.UnixMilli(c.cachedToken.CreatedTS+int64(c.cachedToken.TTL))) || c.cachedToken.Token == "" || tokenExpired
+
+	} else {
+		expiredAt, _ := time.Parse(time.RFC3339, expiredAtString)
+
+		return time.Now().In(time.UTC).After(expiredAt) || c.cachedToken.Token == "" || tokenExpired
+
+	}
+
 }
 
 type Client struct {
@@ -52,7 +64,7 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 		k := KubeconfigToken{}
 
 		data := NewTokenRequest{
-			ResponseType: "kubeconfig",
+			ResponseType: "json",
 			Username:     c.username,
 			Password:     c.password,
 		}

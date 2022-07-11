@@ -13,7 +13,7 @@ type KubeconfigToken struct {
 	Description     string      `json:"description"`
 	Enabled         bool        `json:"enabled"`
 	Expired         bool        `json:"expired"`
-	ExpiresAt       time.Time   `json:"expiresAt"`
+	ExpiresAt       string      `json:"expiresAt"`
 	GroupPrincipals interface{} `json:"groupPrincipals"`
 	ID              string      `json:"id"`
 	IsDerived       bool        `json:"isDerived"`
