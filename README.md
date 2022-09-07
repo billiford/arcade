@@ -66,7 +66,8 @@ Run the following commands to build and generate a token.
 ### Build
 
 ```bash
-go build cmd/arcade/arcade.go
+./get-dependencies.sh
+./build.sh
 ```
 
 ### Run

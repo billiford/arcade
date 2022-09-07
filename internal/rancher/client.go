@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -79,6 +79,7 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 		// Create the request.
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewBuffer(b))
 		if err != nil {
+			log.Printf("NewRequestWithContext(%s), err=%s\n", c.url, err);
 			return "", err
 		}
 
@@ -87,12 +88,20 @@ func (c *Client) Token(ctx context.Context) (string, error) {
 
 		res, err := c.c.Do(req)
 		if err != nil {
+			log.Printf("Do(%s), err=%s\n", c.url, err);
 			return "", err
 		}
 		defer res.Body.Close()
 
 		if res.StatusCode != http.StatusCreated {
-			_, _ = io.Copy(ioutil.Discard, res.Body)
+			buf := make([]byte, 100)
+			_, err := io.ReadFull(res.Body, buf)
+			if err != nil && err != io.ErrUnexpectedEOF {
+				log.Printf("Do(%s), StatusCode=%d, failed to read body: %s\n", c.url, res.StatusCode, err);
+			} else {
+				log.Printf("Do(%s), StatusCode=%d, body: %s\n", c.url, res.StatusCode, buf);
+				_, _ = io.Copy(io.Discard, res.Body)
+			}
 
 			return "", fmt.Errorf(errNotFoundFormat, res.Status)
 		}
